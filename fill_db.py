@@ -3,8 +3,9 @@ import datetime
 import pymysql
 
 # Function to generate random phone number
-def generate_phone_number():
-    return ''.join([str(random.randint(0, 9)) for _ in range(10)])
+def generate_numbers(random_length, prefix=""):
+    random_numbers = ''.join([str(random.randint(0, 9)) for _ in range(random_length)])
+    return prefix + random_numbers
 
 # Function to generate random date
 def generate_random_date(start_date, end_date):
@@ -36,29 +37,30 @@ def main():
 
     # Insert 1000 people into the database
     for i in range(1000):
+        id = generate_numbers(9)
         first_name = random.choice(first_names)
         last_name = random.choice(last_names)
-        birth_date = generate_random_date(datetime.date(1950, 1, 1), datetime.date(2004, 12, 31))
-        mobile_phone = generate_phone_number()
-        home_phone = generate_phone_number()
+        birth_date = generate_random_date(datetime.date(1915, 1, 1), datetime.date(1960, 12, 31))
+        mobile_phone = generate_numbers(8, "05")
+        home_phone = generate_numbers(7, "03-")
         address = f"{random.randint(1, 100)} {random.choice(cities)}, Israel"
         disability_percentage = round(random.uniform(0, 100), 2)
-        monthly_electricity_payment = round(random.uniform(50, 200), 2)
+        monthly_electricity_payment = round(random.uniform(50, 300), 2)
         monthly_water_payment = round(random.uniform(20, 100), 2)
         monthly_city_hall_taxes = round(random.uniform(100, 500), 2)
         relative_first_name = random.choice(first_names)
         relative_last_name = random.choice(last_names)
-        relative_phone = generate_phone_number()
+        relative_phone = generate_numbers(8, "05")
         relative_address = f"{random.randint(1, 100)} {random.choice(cities)}, Israel"
-        relative_birth_date = generate_random_date(datetime.date(1920, 1, 1), datetime.date(1990, 12, 31))
+        relative_birth_date = generate_random_date(datetime.date(1950, 1, 1), datetime.date(2000, 12, 31))
 
         # Insert data into the database
         sql = """INSERT INTO people 
-                (first_name, last_name, birth_date, mobile_phone, home_phone, address, 
+                (id, first_name, last_name, birth_date, mobile_phone, home_phone, address, 
                 disability_percentage, monthly_electricity_payment, monthly_water_payment, monthly_city_hall_taxes, 
                 relative_first_name, relative_last_name, relative_phone, relative_address, relative_birth_date) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-        values = (first_name, last_name, birth_date, mobile_phone, home_phone, address, 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+        values = (id, first_name, last_name, birth_date, mobile_phone, home_phone, address, 
                 disability_percentage, monthly_electricity_payment, monthly_water_payment, monthly_city_hall_taxes, 
                 relative_first_name, relative_last_name, relative_phone, relative_address, relative_birth_date)
         cursor.execute(sql, values)

@@ -8,11 +8,14 @@ from time import sleep
 def main():
     try:
         docker_compose("up -d")
-        init_db()
-        load_db()
+        try:
+            init_db()
+            load_db()
+        except:
+            pass
         sleep(100000)
     except Exception as e:
-        print(e)
+        print("the error is: " ,e)
         docker_compose("down")
 
 def docker_compose(command):
@@ -24,7 +27,5 @@ def load_db():
 
 def init_db():
     initialize_db.main()
-
-    
 
 main()
