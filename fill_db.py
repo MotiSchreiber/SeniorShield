@@ -15,6 +15,18 @@ def generate_random_date(start_date, end_date):
     random_date = start_date + datetime.timedelta(days=random_number_of_days)
     return random_date.strftime("%Y-%m-%d")
 
+def generate_monthly_dates(start_date):
+    """Generate a list of monthly dates starting from the given start_date."""
+    dates = []
+    current_date = start_date
+    while current_date < datetime.date.today():
+        dates.append(current_date)
+        # Move to the next month
+        year = current_date.year + (current_date.month // 12)
+        month = ((current_date.month % 12) + 1)
+        current_date = datetime.date(year, month, 1)
+    return dates
+
 def main():
     # Connect to MySQL database
     connection = pymysql.connect(host='localhost',
@@ -28,9 +40,9 @@ def main():
     # Define list of first names, last names, and cities in Israel
     first_names = ['David', 'Sarah', 'Daniel', 'Leah', 'Michael', 'Rachel', 'Yosef', 'Esther', 'Moshe', 'Ruth',
                 'Avraham', 'Rebecca', 'Yitzhak', 'Miriam', 'Benjamin', 'Hannah', 'Shlomo', 'Chaya', 'Eliyahu', 'Tamar',
-                'Yehuda', 'Deborah', 'Aharon', 'Devorah', 'Yaakov', 'Naomi', 'Shimon', 'Rivka', 'Yosefa', 'Batya']
+                'Yehuda', 'Deborah', 'Aharon', 'Devorah', 'Yaakov', 'Naomi', 'Shimon', 'Rivka', 'Yosefa', 'Batya', 'Moti', 'Avishi', 'Shachar']
     last_names = ['Cohen', 'Levi', 'Mizrachi', 'Peretz', 'Weiss', 'Goldberg', 'Friedman', 'Schwartz', 'Katz', 'Rosenberg',
-                'Stein', 'Gutierrez', 'Azoulay', 'Green', 'Hirsch', 'Shapiro', 'Adler', 'Eisenberg', 'Weinstein', 'Klein']
+                'Stein', 'Gutierrez', 'Azoulay', 'Green', 'Hirsch', 'Shapiro', 'Adler', 'Eisenberg', 'Weinstein', 'Klein', 'Hatzor', 'Pashchur', 'Schreiber']
     cities = ['Tel Aviv', 'Jerusalem', 'Haifa', 'Rishon LeZion', 'Petah Tikva', 'Ashdod', 'Netanya', 'Beer Sheva',
             'Holon', 'Bnei Brak', 'Ramat Gan', 'Ashkelon', 'Bat Yam', 'Herzliya', 'Kfar Saba', 'Beit Shemesh',
             'Lod', 'Ramat HaSharon', 'Nahariya', 'Modiin']
@@ -54,16 +66,28 @@ def main():
         relative_address = f"{random.randint(1, 100)} {random.choice(cities)}, Israel"
         relative_birth_date = generate_random_date(datetime.date(1950, 1, 1), datetime.date(2000, 12, 31))
 
-        # Insert data into the database
-        sql = """INSERT INTO people 
-                (id, first_name, last_name, birth_date, mobile_phone, home_phone, address, 
-                disability_percentage, monthly_electricity_payment, monthly_water_payment, monthly_city_hall_taxes, 
-                relative_first_name, relative_last_name, relative_phone, relative_address, relative_birth_date) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-        values = (id, first_name, last_name, birth_date, mobile_phone, home_phone, address, 
-                disability_percentage, monthly_electricity_payment, monthly_water_payment, monthly_city_hall_taxes, 
-                relative_first_name, relative_last_name, relative_phone, relative_address, relative_birth_date)
-        cursor.execute(sql, values)
+        # Insert person data into the database
+        sql_person = """INSERT INTO people 
+                        (id, first_name, last_name, birth_date, mobile_phone, home_phone, address, 
+                        disability_percentage, relative_first_name, relative_last_name, relative_phone, relative_address, relative_birth_date) 
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+        values_person = (id, first_name, last_name, birth_date, mobile_phone, home_phone, address,
+                         disability_percentage, relative_first_name, relative_last_name, relative_phone,
+                         relative_address, relative_birth_date)
+        cursor.execute(sql_person, values_person)
+
+        # Generate and insert monthly payments for 10 years
+        start_date = datetime.date.today() - datetime.timedelta(days=365 * 10)  # 10 years ago
+        for payment_date in generate_monthly_dates(start_date):
+            # Insert payment data into the database
+            sql_payments = """INSERT INTO monthly_payments 
+                              (person_id, payment_date, electricity_payment, water_payment, city_hall_taxes) 
+                              VALUES (%s, %s, %s, %s, %s)"""
+            electricity_payment = round(random.uniform(50, 300), 2)  # Random payment amount
+            water_payment = round(random.uniform(20, 100), 2)  # Random payment amount
+            city_hall_taxes = round(random.uniform(100, 500), 2)  # Random payment amount
+            values_payments = (id, payment_date, electricity_payment, water_payment, city_hall_taxes)
+            cursor.execute(sql_payments, values_payments)
 
     # Commit changes to the database
     connection.commit()
