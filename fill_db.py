@@ -34,6 +34,9 @@ def main():
     cities = ['Tel Aviv', 'Jerusalem', 'Haifa', 'Rishon LeZion', 'Petah Tikva', 'Ashdod', 'Netanya', 'Beer Sheva',
             'Holon', 'Bnei Brak', 'Ramat Gan', 'Ashkelon', 'Bat Yam', 'Herzliya', 'Kfar Saba', 'Beit Shemesh',
             'Lod', 'Ramat HaSharon', 'Nahariya', 'Modiin']
+    neighborhoods = ["ganei-aviv", "ganei-ayalon", "ganei-yaar", "harakevet", "kiryat-menahem-begin ", 
+                     "neve-shalom_lod", "snir", "גבעת-הזיתים", "לוד-הצעירה", "משמר-נוף", "נאות-יצחק", 
+                     "נווה-זית", "נווה-נוף", "רמת-אלישיב", "רמת-אשכול"]
 
     # Insert 1000 people into the database
     for i in range(1000):
