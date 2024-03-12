@@ -1,3 +1,13 @@
+-- Truncate all tables in the database
+SET FOREIGN_KEY_CHECKS = 0; -- Disable foreign key checks to avoid constraint violations
+
+-- Truncate each table individually
+TRUNCATE TABLE table1;
+TRUNCATE TABLE table2;
+-- Repeat this for all tables in your database
+
+SET FOREIGN_KEY_CHECKS = 1; -- Enable foreign key checks
+
 CREATE TABLE people (
     id VARCHAR(9) PRIMARY KEY,
     first_name VARCHAR(50),
